@@ -6,7 +6,6 @@ use hex::decode;
 use sodiumoxide::crypto::secretbox::xsalsa20poly1305::Nonce;
 use sodiumoxide::crypto::secretbox::xsalsa20poly1305::Key;
 use lazy_static::lazy_static;
-use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use std::{
     fs::File,
     io::{prelude::*, BufReader},
@@ -56,7 +55,7 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
         .collect()
 }
 
-fn compute_job(username: &str) -> &str{
+fn compute_job(username: &str){
     let max = 10;
     for n1 in 0..max {
         for n2 in 0..max {
@@ -82,7 +81,7 @@ fn compute_job(username: &str) -> &str{
                         //println!("here");
                         let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
                         match decrypt_result {
-                            Ok(_v) => println!("{}",key),
+                            Ok(_v) => println!("{}", key),
                             Err(_e) => continue,
                         };
                     }
@@ -90,17 +89,12 @@ fn compute_job(username: &str) -> &str{
             }
         }
     }
-    return "done";
 }
 
 fn main() {
     let out = lines_from_file("./out.txt");
-    let pb = ProgressBar::new(out.len() as u64);
-    pb.set_style(
-        ProgressStyle::default_bar()
-            .template("{wide_bar} {percent}[{elapsed_precise}<{eta_precise} {per_sec}]")
-    );
-    out.par_iter().progress_with(pb).map(|p| {
+
+    out.par_iter().for_each(|p| {
         compute_job(p);
-    }).collect()
+    });
 }
