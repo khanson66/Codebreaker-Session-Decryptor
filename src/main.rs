@@ -39,11 +39,6 @@ lazy_static! {
             nonce: decode("3a2acf6188c7e71ae120281b902efd0bcb314c41b7893d1b").unwrap(),
             ciphertext: decode("0c2c9cec591e5656ab3aecc4f8c1cfa0522d59c00883bdbdc69203e773cf3a6297fa7c702b8e89293e3cff70f5cf3b32287c").unwrap(),
             time: 1615896250,
-        },
-        SalsaMessage {
-            nonce: decode("c08997c1fe9934b5522f6a7658c608fd34053df7b91007c2").unwrap(),
-            ciphertext: decode("77dc23be36b9bef292103506557557a63fdcabd7cf91a55cdfec6cb473b85b098408e7115e5c2edeb075640757a5b4b79290").unwrap(),
-            time: 1615896210,
         }
     ];
 }
