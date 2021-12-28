@@ -6,7 +6,7 @@ use hex::decode;
 use sodiumoxide::crypto::secretbox::xsalsa20poly1305::Nonce;
 use sodiumoxide::crypto::secretbox::xsalsa20poly1305::Key;
 use lazy_static::lazy_static;
-use indicatif::{ParallelProgressIterator, ProgressBar};
+use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use std::{
     fs::File,
     io::{prelude::*, BufReader},
@@ -94,8 +94,12 @@ fn compute_job(username: &str) -> &str{
 }
 
 fn main() {
-    let out = lines_from_file("./out");
+    let out = lines_from_file("./out.txt");
     let pb = ProgressBar::new(out.len() as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{wide_bar} Elapsed: {elapsed_precise}, ETA: {eta_precise}")
+    );
     out.par_iter().progress_with(pb).map(|p| {
         compute_job(p);
     }).collect()
