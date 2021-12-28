@@ -58,7 +58,7 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
 
 fn compute_job(username: &str) -> &str{
     let max = 10;
-    for n1 in 0..2 {
+    for n1 in 0..max {
         for n2 in 0..max {
             for n3 in 0..max {
                 for n4 in 0..max {
