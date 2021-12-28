@@ -19,7 +19,7 @@ struct SalsaMessage {
 }
 
 lazy_static! {
-    static ref JOBS: [SalsaMessage; 5] = [
+    static ref JOBS: [SalsaMessage; 4] = [
         SalsaMessage {
             nonce: decode("529206b745354e947640aa54ed0a4b2a56356e7908ab2a43").unwrap(),
             ciphertext: decode("2c3166148770f325dfa57709a4581dd1434e742d30ee667b3f53f224a1270cbae23e9b2b70c27225a84d6b5a294d357c1ee6").unwrap(),
