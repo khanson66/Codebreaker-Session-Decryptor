@@ -98,7 +98,7 @@ fn main() {
     let pb = ProgressBar::new(out.len() as u64);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template("{wide_bar} Elapsed: {elapsed_precise}, ETA: {eta_precise}")
+            .template("{wide_bar} {percent}[{elapsed_precise}<{eta_precise} {per_sec}]")
     );
     out.par_iter().progress_with(pb).map(|p| {
         compute_job(p);
