@@ -55,7 +55,7 @@ fn compute_job(username: &str) -> String{
             for n3 in 0..max {
                 for n4 in 0..max {
                     for job in JOBS.iter() {
-                        let key = format!("{}-{}.{}.{}.{}-{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), job.time.to_string());
+                        let key = format!("{}+{}.{}.{}.{}+{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), job.time.to_string());
                         //println!("{}",key);
                         let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
 
