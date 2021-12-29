@@ -11,6 +11,8 @@ use std::{
     io::{prelude::*, BufReader},
     path::Path,
 };
+use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
+use rayon::prelude::*;
 
 struct SalsaMessage {
     nonce: Vec<u8>,
@@ -50,8 +52,9 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
         .collect()
 }
 
-fn compute_job(username: &str){
+fn compute_job(username: &str) -> String{
     let max = 10;
+    let mut output = "".to_string();
     for n1 in 0..max {
         for n2 in 0..max {
             for n3 in 0..max {
@@ -76,7 +79,7 @@ fn compute_job(username: &str){
                         //println!("here");
                         let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
                         match decrypt_result {
-                            Ok(_v) => println!("{}", key),
+                            Ok(_v) => output.push_str(key.as_str()),
                             Err(_e) => continue,
                         };
                     }
@@ -84,12 +87,22 @@ fn compute_job(username: &str){
             }
         }
     }
+    return output;
 }
+
 
 fn main() {
     let out = lines_from_file("./out.txt");
+    let pb = ProgressBar::new(out.len() as u64);
+    let pbclone = pb.clone();
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{wide_bar} {percent}[{elapsed_precise}<{eta_precise} {per_sec}]")
+    );
+    let result :Vec<_> = out.par_iter().progress_with(pb).map(|p| {
+        let out = compute_job(p);
+        pbclone.println(&out);
+        return out;
+    }).collect();
 
-    out.par_iter().for_each(|p| {
-        compute_job(p);
-    });
 }
