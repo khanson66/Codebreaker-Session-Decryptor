@@ -1,18 +1,13 @@
 use rayon::iter::{ParallelIterator, IntoParallelRefIterator};
-
 use sha2::{Sha256, Digest};
 use sodiumoxide::crypto::secretbox;
 use hex::decode;
 use sodiumoxide::crypto::secretbox::xsalsa20poly1305::Nonce;
 use sodiumoxide::crypto::secretbox::xsalsa20poly1305::Key;
 use lazy_static::lazy_static;
-use std::{
-    fs::File,
-    io::{prelude::*, BufReader},
-    path::Path,
-};
+use std::{env, fs::File, io::{prelude::*, BufReader}, path::Path};
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
-use rayon::prelude::*;
+
 
 struct SalsaMessage {
     nonce: Vec<u8>,
@@ -92,14 +87,15 @@ fn compute_job(username: &str) -> String{
 
 
 fn main() {
-    let out = lines_from_file("./out.txt");
+    let args: Vec<String> = env::args().collect();
+    let out = lines_from_file(&args[1]);
     let pb = ProgressBar::new(out.len() as u64);
     let pbclone = pb.clone();
     pb.set_style(
         ProgressStyle::default_bar()
             .template("{wide_bar} {percent}[{elapsed_precise}<{eta_precise} {per_sec}]")
     );
-    let result :Vec<_> = out.par_iter().progress_with(pb).map(|p| {
+    let _result :Vec<_> = out.par_iter().progress_with(pb).map(|p| {
         let out = compute_job(p);
         pbclone.println(&out);
         return out;
