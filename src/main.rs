@@ -89,6 +89,7 @@ fn compute_job(username: &str) -> String{
 fn main() {
     let args: Vec<String> = env::args().collect();
     let out = lines_from_file(&args[1]);
+    println!("{}",out.len());
     let pb = ProgressBar::new(out.len() as u64);
     let pbclone = pb.clone();
     pb.set_style(
