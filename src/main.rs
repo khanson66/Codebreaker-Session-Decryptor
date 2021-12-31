@@ -48,15 +48,14 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
 }
 
 fn compute_job(username: &str) -> String{
-    let max = 10;
+    let max = 99;
     let mut output = "".to_string();
     for n1 in 0..max {
         for n2 in 0..max {
             for n3 in 0..max {
-                for n4 in 0..max {
                     for job in JOBS.iter() {
-
-                        let key = format!("{}+{}.{}.{}.{}+{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), job.time.to_string());
+                        let version = format!("{}.{}.{}.",n1.to_string(), n2.to_string(), n3.to_string());
+                        let key = format!("{}+{}+{}", username, &version[..7], job.time.to_string());
                         //println!("{}",key);
                         let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
 
@@ -81,9 +80,9 @@ fn compute_job(username: &str) -> String{
                             Ok(_v) => output.push_str(key.as_str()),
                             Err(_e) => continue,
                         };
-                        
+
                     }
-                }
+
             }
         }
     }
