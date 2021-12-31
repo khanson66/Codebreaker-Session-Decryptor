@@ -14,7 +14,7 @@ struct SalsaMessage {
     ciphertext: Vec<u8>,
     time: u32,
 }
-
+static SYSTEMS: [&str; 4] = ["Linux", "GNU", "Windows_NT", "FreeBSD"];
 lazy_static! {
     static ref JOBS: [SalsaMessage; 4] = [
         SalsaMessage {
@@ -55,28 +55,33 @@ fn compute_job(username: &str) -> String{
             for n3 in 0..max {
                 for n4 in 0..max {
                     for job in JOBS.iter() {
-                        let key = format!("{}+{}.{}.{}.{}+{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), job.time.to_string());
-                        //println!("{}",key);
-                        let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
+                        for sys in SYSTEMS.iter() {
+                            let key = format!("{}+{}.{}.{}.{}+{}+{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), sys.to_string(), job.time.to_string());
+                            //println!("{}",key);
+                            let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
 
-                        let mut hasher= Sha256::new();
-                        hasher.update(key.as_bytes());
-                        let hash_key = hasher.finalize();
+                            let mut hasher = Sha256::new();
+                            hasher.update(key.as_bytes());
+                            let hash_key = hasher.finalize();
 
-                        let byte_key = Key::from_slice(&hash_key);
-                        let clean_key: Key;
-                        match byte_key {
-                            // The Key was valid
-                            Some(x) => clean_key = x,
-                            // The Key was invalid
-                            None    => {println!("Error: Cannot Convert Key");continue},
-                        };
-                        //println!("here");
-                        let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
-                        match decrypt_result {
-                            Ok(_v) => output.push_str(key.as_str()),
-                            Err(_e) => continue,
-                        };
+                            let byte_key = Key::from_slice(&hash_key);
+                            let clean_key: Key;
+                            match byte_key {
+                                // The Key was valid
+                                Some(x) => clean_key = x,
+                                // The Key was invalid
+                                None => {
+                                    println!("Error: Cannot Convert Key");
+                                    continue
+                                },
+                            };
+                            //println!("here");
+                            let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
+                            match decrypt_result {
+                                Ok(_v) => output.push_str(key.as_str()),
+                                Err(_e) => continue,
+                            };
+                        }
                     }
                 }
             }
