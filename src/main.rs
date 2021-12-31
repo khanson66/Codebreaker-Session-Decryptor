@@ -48,41 +48,45 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
 }
 
 fn compute_job(username: &str) -> String{
-    let max = 99;
+    let max = 10;
     let mut output = "".to_string();
     for n1 in 0..max {
         for n2 in 0..max {
             for n3 in 0..max {
-                    for job in JOBS.iter() {
-                        let version = format!("{}.{}.{}.-WGX",n1.to_string(), n2.to_string(), n3.to_string());
-                        let key = format!("{}+{}+{}", username, &version[..7], job.time.to_string());
-                        //println!("{}",key);
-                        let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
+                for n4 in 0..max {
+                    for num in 0..max{
+                        for job in JOBS.iter() {
+                            let number = format!("{:02}",num);
+                            let key = format!("{}{}+{}.{}.{}.{}+{}", username, number, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), job.time.to_string());
+                            //println!("{}",key);
+                            let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
 
-                        let mut hasher = Sha256::new();
-                        hasher.update(key.as_bytes());
-                        let hash_key = hasher.finalize();
+                            let mut hasher = Sha256::new();
+                            hasher.update(key.as_bytes());
+                            let hash_key = hasher.finalize();
 
-                        let byte_key = Key::from_slice(&hash_key);
-                        let clean_key: Key;
-                        match byte_key {
-                            // The Key was valid
-                            Some(x) => clean_key = x,
-                            // The Key was invalid
-                            None => {
-                                println!("Error: Cannot Convert Key");
-                                continue
-                            },
-                        };
-                        //println!("here");
-                        let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
-                        match decrypt_result {
-                            Ok(_v) => output.push_str(key.as_str()),
-                            Err(_e) => continue,
-                        };
+                            let byte_key = Key::from_slice(&hash_key);
+                            let clean_key: Key;
+                            match byte_key {
+                                // The Key was valid
+                                Some(x) => clean_key = x,
+                                // The Key was invalid
+                                None => {
+                                    println!("Error: Cannot Convert Key");
+                                    continue
+                                },
+                            };
+                            //println!("here");
+                            let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
+                            match decrypt_result {
+                                Ok(_v) => output.push_str(key.as_str()),
+                                Err(_e) => continue,
+                            };
 
+                        }
                     }
 
+                }
             }
         }
     }
