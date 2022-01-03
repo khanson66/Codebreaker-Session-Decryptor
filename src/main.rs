@@ -14,9 +14,9 @@ struct SalsaMessage {
     ciphertext: Vec<u8>,
     time: u32,
 }
-static SYSTEMS: [&str; 4] = ["Linux", "GNU", "Windows_NT", "FreeBSD"];
+
 lazy_static! {
-    static ref JOBS: [SalsaMessage; 4] = [
+    static ref JOBS: [SalsaMessage; 5] = [
         SalsaMessage {
             nonce: decode("529206b745354e947640aa54ed0a4b2a56356e7908ab2a43").unwrap(),
             ciphertext: decode("2c3166148770f325dfa57709a4581dd1434e742d30ee667b3f53f224a1270cbae23e9b2b70c27225a84d6b5a294d357c1ee6").unwrap(),
@@ -35,6 +35,11 @@ lazy_static! {
         SalsaMessage {
             nonce: decode("3a2acf6188c7e71ae120281b902efd0bcb314c41b7893d1b").unwrap(),
             ciphertext: decode("0c2c9cec591e5656ab3aecc4f8c1cfa0522d59c00883bdbdc69203e773cf3a6297fa7c702b8e89293e3cff70f5cf3b32287c").unwrap(),
+            time: 1615896250,
+        },
+        SalsaMessage {
+            nonce: decode("ebbc2fa4e97385741a8166abff0a91d5aef4d17a6dedee1e").unwrap(),
+            ciphertext: decode("620f9867503ed0379f59d83e8b860a555f513dfd24760fc2157b5ea209b384eb6c30db68416b3c9cda0e3fb4954fc1dcd2e3").unwrap(),
             time: 1615896250,
         }
     ];
