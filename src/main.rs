@@ -40,7 +40,7 @@ lazy_static! {
         SalsaMessage {
             nonce: decode("ebbc2fa4e97385741a8166abff0a91d5aef4d17a6dedee1e").unwrap(),
             ciphertext: decode("620f9867503ed0379f59d83e8b860a555f513dfd24760fc2157b5ea209b384eb6c30db68416b3c9cda0e3fb4954fc1dcd2e3").unwrap(),
-            time: 1615896250,
+            time: 1615896246,
         }
     ];
 }
