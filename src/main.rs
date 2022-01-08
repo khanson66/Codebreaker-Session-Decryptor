@@ -16,7 +16,7 @@ struct SalsaMessage {
 }
 
 lazy_static! {
-    static ref JOBS: [SalsaMessage; 4] = [
+    static ref JOBS: [SalsaMessage; 6] = [
         SalsaMessage {
             nonce: decode("529206b745354e947640aa54ed0a4b2a56356e7908ab2a43").unwrap(),
             ciphertext: decode("2c3166148770f325dfa57709a4581dd1434e742d30ee667b3f53f224a1270cbae23e9b2b70c27225a84d6b5a294d357c1ee6").unwrap(),
@@ -36,6 +36,16 @@ lazy_static! {
             nonce: decode("3a2acf6188c7e71ae120281b902efd0bcb314c41b7893d1b").unwrap(),
             ciphertext: decode("0c2c9cec591e5656ab3aecc4f8c1cfa0522d59c00883bdbdc69203e773cf3a6297fa7c702b8e89293e3cff70f5cf3b32287c").unwrap(),
             time: 1615896250,
+        },
+        SalsaMessage {
+            nonce: decode("c08997c1fe9934b5522f6a7658c608fd34053df7b91007c2").unwrap(),
+            ciphertext: decode("77dc23be36b9bef292103506557557a63fdcabd7cf91a55cdfec6cb473b85b098408e7115e5c2edeb075640757a5b4b79290").unwrap(),
+            time: 1615896210,
+        },
+        SalsaMessage {
+            nonce: decode("ebbc2fa4e97385741a8166abff0a91d5aef4d17a6dedee1e").unwrap(),
+            ciphertext: decode("620f9867503ed0379f59d83e8b860a555f513dfd24760fc2157b5ea209b384eb6c30db68416b3c9cda0e3fb4954fc1dcd2e3").unwrap(),
+            time: 1615896246,
         }
     ];
 }
@@ -55,35 +65,35 @@ fn compute_job(username: &str) -> String{
             for n3 in 0..max {
                 for n4 in 0..max {
                     for job in JOBS.iter() {
-                        let key = format!("{}+{}.{}.{}.{}+{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), job.time.to_string());
-                        //println!("{}",key);
-                        let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
+                        for time in job.time-5..job.time+5{
+                            let key = format!("{}+{}.{}.{}.{}+{}", username, n1.to_string(), n2.to_string(), n3.to_string(), n4.to_string(), time.to_string());
+                            //debug!("{}",key);
+                            let nonce: Nonce = Nonce::from_slice(&job.nonce).unwrap();
 
-                        let mut hasher = Sha256::new();
-                        hasher.update(key.as_bytes());
-                        let hash_key = hasher.finalize();
+                            let mut hasher = Sha256::new();
+                            hasher.update(key.as_bytes());
+                            let hash_key = hasher.finalize();
 
-                        let byte_key = Key::from_slice(&hash_key);
-                        let clean_key: Key;
-                        match byte_key {
-                            // The Key was valid
-                            Some(x) => clean_key = x,
-                            // The Key was invalid
-                            None => {
-                                println!("Error: Cannot Convert Key");
-                                continue
-                            },
-                        };
-                        //println!("here");
-                        let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
-                        match decrypt_result {
-                            Ok(_v) => output.push_str(key.as_str()),
-                            Err(_e) => continue,
-                        };
+                            let byte_key = Key::from_slice(&hash_key);
+                            let clean_key: Key;
+                            match byte_key {
+                                // The Key was valid
+                                Some(x) => clean_key = x,
+                                // The Key was invalid
+                                None => {
+                                    println!("Error: Cannot Convert Key");
+                                    continue
+                                },
+                            };
+
+                            let decrypt_result = secretbox::open(&job.ciphertext, &nonce, &clean_key);
+                            match decrypt_result {
+                                Ok(_v) => output.push_str(key.as_str()),
+                                Err(_e) => continue,
+                            };
 
                         }
-
-
+                    }   
                 }
             }
         }
@@ -95,7 +105,7 @@ fn compute_job(username: &str) -> String{
 fn main() {
     let args: Vec<String> = env::args().collect();
     let out = lines_from_file(&args[1]);
-    println!("{}",out.len());
+    println!("names to test {}",out.len());
     let pb = ProgressBar::new(out.len() as u64);
     let pbclone = pb.clone();
     pb.set_style(
